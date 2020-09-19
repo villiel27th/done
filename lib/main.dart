@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'home_screen.dart';
+import 'screens/home_screen.dart';
 
 void main() {
   runApp(MyApp());
@@ -15,10 +15,10 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: "Chatlity",
+      title: "done",
       debugShowCheckedModeBanner: false,
       home: HomeScreen(),
-      theme: ThemeData(brightness: Brightness.dark),
+      theme: ThemeData(brightness: Brightness.light),
     );
   }
 }
