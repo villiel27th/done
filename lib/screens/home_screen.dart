@@ -1,6 +1,8 @@
-import 'package:done/const.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
+import '../const.dart';
+import 'detail_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -147,17 +149,23 @@ class _HomeScreenState extends State<HomeScreen> {
                     return Container(
                       width: MediaQuery.of(context).size.width * 0.6,
                       margin: EdgeInsets.only(right: 20),
-                      child: Card(
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20)),
-                        color: Colors.green,
-                        child: Container(
-                          child: Center(
-                              child: Text(
-                            numbers[index].toString(),
-                            style:
-                                TextStyle(color: Colors.white, fontSize: 36.0),
-                          )),
+                      child: InkWell(
+                        onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => DetailScreen())),
+                        child: Card(
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20)),
+                          color: Colors.green,
+                          child: Container(
+                            child: Center(
+                                child: Text(
+                              numbers[index].toString(),
+                              style: TextStyle(
+                                  color: Colors.white, fontSize: 36.0),
+                            )),
+                          ),
                         ),
                       ),
                     );
