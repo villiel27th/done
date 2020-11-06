@@ -1,3 +1,4 @@
+import 'package:done/const.dart';
 import 'package:flutter/material.dart';
 
 import 'screens/home_screen.dart';
@@ -18,7 +19,7 @@ class _MyAppState extends State<MyApp> {
       title: "done",
       debugShowCheckedModeBanner: false,
       home: HomeScreen(),
-      theme: ThemeData(brightness: Brightness.light),
+      theme: ThemeData(brightness: Brightness.light, primaryColor: mainColor),
     );
   }
 }

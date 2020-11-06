@@ -17,7 +17,7 @@ class DetailScreen extends StatefulWidget {
 class _DetailScreenState extends State<DetailScreen> {
   DatePickerController _controller = DatePickerController();
   final ScheduleBloc scheduleBloc = ScheduleBloc();
-  final DismissDirection _dismissDirection = DismissDirection.horizontal;
+  final DismissDirection _dismissDirection = DismissDirection.endToStart;
   List<Schedule> scheduleList;
 
   @override
@@ -26,6 +26,8 @@ class _DetailScreenState extends State<DetailScreen> {
       color: Colors.white,
       child: SafeArea(
         child: Scaffold(
+          resizeToAvoidBottomInset: false,
+          backgroundColor: secondaryColor,
           body: detailBody(),
         ),
       ),
@@ -79,9 +81,10 @@ class _DetailScreenState extends State<DetailScreen> {
                         ),
                         Container(
                           alignment: Alignment.centerRight,
+                          margin: EdgeInsets.only(right: 5),
                           child: IconButton(
                             icon: Icon(
-                              Icons.add_box,
+                              Icons.add_circle,
                               size: 35,
                               color: secondaryColor,
                             ),
@@ -132,6 +135,17 @@ class _DetailScreenState extends State<DetailScreen> {
         Expanded(
           flex: 2,
           child: getTodosWidget(),
+//          child: ShaderMask(
+//            shaderCallback: (Rect bounds) {
+//              return LinearGradient(
+//                begin: Alignment.center,
+//                end: Alignment.bottomCenter,
+//                colors: <Color>[Colors.white, Colors.transparent],
+//              ).createShader(bounds);
+//            },
+//            child: getTodosWidget(),
+//            blendMode: BlendMode.dstIn,
+//          ),
         )
       ],
     );
@@ -175,7 +189,7 @@ class _DetailScreenState extends State<DetailScreen> {
                                   hintText: 'I have to...',
                                   labelText: 'New Todo',
                                   labelStyle: TextStyle(
-                                      color: Colors.indigoAccent,
+                                      color: mainColor,
                                       fontWeight: FontWeight.w500)),
                               validator: (String value) {
                                 if (value.isEmpty) {
@@ -190,7 +204,7 @@ class _DetailScreenState extends State<DetailScreen> {
                           Padding(
                             padding: EdgeInsets.only(left: 5, top: 15),
                             child: CircleAvatar(
-                              backgroundColor: Colors.indigoAccent,
+                              backgroundColor: mainColor,
                               radius: 18,
                               child: IconButton(
                                 icon: Icon(
@@ -242,6 +256,115 @@ class _DetailScreenState extends State<DetailScreen> {
     );
   }
 
+//  Widget getTodoCardWidget(AsyncSnapshot<List<Schedule>> snapshot) {
+//    /*Since most of our operations are asynchronous
+//    at initial state of the operation there will be no stream
+//    so we need to handle it if this was the case
+//    by showing users a processing/loading indicator*/
+//    if (snapshot.hasData) {
+//      /*Also handles whenever there's stream
+//      but returned returned 0 records of Todo from DB.
+//      If that the case show user that you have empty Todos
+//      */
+//      return snapshot.data.length != 0
+//          ? ListView.builder(
+//              itemCount: snapshot.data.length,
+//              itemBuilder: (context, itemPosition) {
+//                Schedule todo = snapshot.data[itemPosition];
+//                final Widget dismissibleCard = new Dismissible(
+//                  background: Container(
+//                    margin: EdgeInsetsResponsive.symmetric(horizontal: 35),
+//                    child: Padding(
+//                      padding: EdgeInsets.only(right: 20),
+//                      child: Align(
+//                        alignment: Alignment.centerRight,
+//                        child: Text(
+//                          "Delete",
+//                          style: TextStyle(color: Colors.white),
+//                        ),
+//                      ),
+//                    ),
+//                    color: Colors.redAccent,
+//                  ),
+//                  onDismissed: (direction) {
+//                    /*The magic
+//                    delete Todo item by ID whenever
+//                    the card is dismissed
+//                    */
+//                    scheduleBloc.deleteScheduleById(todo.id);
+//                  },
+//                  direction: _dismissDirection,
+//                  key: new ObjectKey(todo),
+//                  child: Card(
+//                      margin: EdgeInsetsResponsive.symmetric(horizontal: 35),
+//                      shape: RoundedRectangleBorder(
+//                        side: BorderSide(color: Colors.grey[200], width: 0.5),
+//                        borderRadius: BorderRadius.circular(5),
+//                      ),
+//                      color: Colors.white,
+//                      child: ListTile(
+//                        leading: InkWell(
+//                          onTap: () {
+//                            //Reverse the value
+//                            todo.isDone = !todo.isDone;
+//                            /*
+//                            Another magic.
+//                            This will update Todo isDone with either
+//                            completed or not
+//                          */
+//                            scheduleBloc.updateSchedule(todo);
+//                          },
+//                          child: Container(
+//                            //decoration: BoxDecoration(),
+//                            child: Padding(
+//                              padding: const EdgeInsets.all(15.0),
+//                              child: todo.isDone
+//                                  ? Icon(
+//                                      Icons.done,
+//                                      size: 26.0,
+//                                      color: Colors.indigoAccent,
+//                                    )
+//                                  : Icon(
+//                                      Icons.check_box_outline_blank,
+//                                      size: 26.0,
+//                                      color: Colors.tealAccent,
+//                                    ),
+//                            ),
+//                          ),
+//                        ),
+//                        title: Text(
+//                          todo.description,
+//                          style: TextStyle(
+//                              fontSize: 16.5,
+//                              fontFamily: 'RobotoMono',
+//                              fontWeight: FontWeight.w500,
+//                              decoration: todo.isDone
+//                                  ? TextDecoration.lineThrough
+//                                  : TextDecoration.none),
+//                        ),
+//                      )),
+//                );
+//                return dismissibleCard;
+//              },
+//            )
+//          : Container(
+//              child: Center(
+//              //this is used whenever there 0 Todo
+//              //in the data base
+//              child: noTodoMessageWidget(),
+//            ));
+//    } else {
+//      return Center(
+//        /*since most of our I/O operations are done
+//        outside the main thread asynchronously
+//        we may want to display a loading indicator
+//        to let the use know the app is currently
+//        processing*/
+//        child: loadingData(),
+//      );
+//    }
+//  }
+
   Widget getTodoCardWidget(AsyncSnapshot<List<Schedule>> snapshot) {
     /*Since most of our operations are asynchronous
     at initial state of the operation there will be no stream
@@ -259,12 +382,13 @@ class _DetailScreenState extends State<DetailScreen> {
                 Schedule todo = snapshot.data[itemPosition];
                 final Widget dismissibleCard = new Dismissible(
                   background: Container(
+                    margin: EdgeInsetsResponsive.fromLTRB(35, 0, 35, 39),
                     child: Padding(
-                      padding: EdgeInsets.only(left: 10),
+                      padding: EdgeInsets.only(right: 20),
                       child: Align(
-                        alignment: Alignment.centerLeft,
+                        alignment: Alignment.centerRight,
                         child: Text(
-                          "Deleting",
+                          "Delete",
                           style: TextStyle(color: Colors.white),
                         ),
                       ),
@@ -280,53 +404,104 @@ class _DetailScreenState extends State<DetailScreen> {
                   },
                   direction: _dismissDirection,
                   key: new ObjectKey(todo),
-                  child: Card(
-                      shape: RoundedRectangleBorder(
-                        side: BorderSide(color: Colors.grey[200], width: 0.5),
-                        borderRadius: BorderRadius.circular(5),
-                      ),
-                      color: Colors.white,
-                      child: ListTile(
-                        leading: InkWell(
-                          onTap: () {
-                            //Reverse the value
-                            todo.isDone = !todo.isDone;
-                            /*
-                            Another magic.
-                            This will update Todo isDone with either
-                            completed or not
-                          */
-                            scheduleBloc.updateSchedule(todo);
-                          },
-                          child: Container(
-                            //decoration: BoxDecoration(),
-                            child: Padding(
-                              padding: const EdgeInsets.all(15.0),
-                              child: todo.isDone
-                                  ? Icon(
-                                      Icons.done,
-                                      size: 26.0,
-                                      color: Colors.indigoAccent,
-                                    )
-                                  : Icon(
-                                      Icons.check_box_outline_blank,
-                                      size: 26.0,
-                                      color: Colors.tealAccent,
-                                    ),
-                            ),
+                  child: ContainerResponsive(
+                    margin: EdgeInsets.only(bottom: 20),
+                    height: 200,
+                    child: Card(
+                        elevation: 2,
+                        margin: EdgeInsetsResponsive.symmetric(horizontal: 35),
+                        shape: RoundedRectangleBorder(
+                          side: BorderSide(color: Colors.grey[200], width: 0.5),
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                        color: Colors.white,
+                        child: ListTile(
+                          leading: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Text(
+                                "11:00",
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold, fontSize: 20),
+                              ),
+                              SizedBoxResponsive(
+                                height: 15,
+                              ),
+                              Text("12:30",
+                                  style: TextStyle(
+                                      color: mainColor.withOpacity(0.6),
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 15)),
+                            ],
                           ),
-                        ),
-                        title: Text(
-                          todo.description,
-                          style: TextStyle(
-                              fontSize: 16.5,
-                              fontFamily: 'RobotoMono',
-                              fontWeight: FontWeight.w500,
-                              decoration: todo.isDone
-                                  ? TextDecoration.lineThrough
-                                  : TextDecoration.none),
-                        ),
-                      )),
+                          title: Row(
+                            children: <Widget>[
+                              ContainerResponsive(
+                                width: 13,
+                                height: 200,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(50),
+                                  color: Colors.black,
+                                ),
+                                margin: EdgeInsets.only(bottom: 8),
+                              ),
+                              SizedBoxResponsive(
+                                width: 40,
+                              ),
+                              Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 3, bottom: 4),
+                                    child: Text(
+                                      'BUSINESS',
+                                      style: TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.bold,
+                                          color: mainColor.withOpacity(0.6)),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 3, bottom: 4),
+                                    child: Text(
+                                      todo.description,
+                                      style: TextStyle(
+                                          fontSize: 16.5,
+                                          fontWeight: FontWeight.bold,
+                                          decoration: todo.isDone
+                                              ? TextDecoration.lineThrough
+                                              : TextDecoration.none),
+                                    ),
+                                  ),
+                                  Row(
+                                    children: <Widget>[
+                                      Icon(
+                                        Icons.location_on,
+                                        color: mainColor.withOpacity(0.6),
+                                        size: 17,
+                                      ),
+                                      Text(
+                                        'Kensington Park Road',
+                                        style: TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.bold,
+                                            color: mainColor.withOpacity(0.6)),
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBoxResponsive(
+                                    height: 10,
+                                  )
+                                ],
+                              ),
+                            ],
+                          ),
+                        )),
+                  ),
                 );
                 return dismissibleCard;
               },
@@ -350,11 +525,20 @@ class _DetailScreenState extends State<DetailScreen> {
   }
 
   Widget noTodoMessageWidget() {
-    return Container(
-      child: Text(
-        "Start adding Todo...",
-        style: TextStyle(fontSize: 19, fontWeight: FontWeight.w500),
-      ),
+    return Column(
+      children: <Widget>[
+        SizedBoxResponsive(
+          height: 100,
+        ),
+        Container(child: Image.asset("assets/empty_list.png")),
+        SizedBoxResponsive(
+          height: 100,
+        ),
+        TextResponsive(
+          "Start adding plans to your schedule!",
+          style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
+        )
+      ],
     );
   }
 
